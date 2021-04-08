@@ -1,0 +1,35 @@
+import time as t
+import RPi.GPIO as GPIO
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def num2dac(value):
+    a = bin(value)
+    a = a.split('b')[1]
+    a = "0"*(8 - len(a)) + a
+    return list(map(int, a))
+
+
+chan_list = [26, 19, 13, 6, 5, 11, 9, 10]
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(chan_list, GPIO.OUT)
+
+try:
+    frequency = float(input('f '))
+    samplingFrequency = float(input('sF '))
+    seconds = int(input())
+
+    time = np.arange(0, seconds, 0.02*np.pi / frequency)
+
+    values = 127.5*(np.sin(frequency * time) + 1)
+    plt.plot(time[0:1000], values[0:1000])
+    plt.show()
+
+    for val in values:
+        GPIO.output(chan_list, num2dac(round(val)))
+        t.sleep(0.02*np.pi / frequency)
+finally:
+    GPIO.output(chan_list, [0]*8)
+    GPIO.cleanup()

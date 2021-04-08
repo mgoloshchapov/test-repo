@@ -1,0 +1,10 @@
+from scipy.io.wavfile import read
+from scipy.io.wavfile import write
+import numpy as np
+
+sr, sig = read(file)
+sig_int8 = np.uint8(sig)
+
+np.savez(out_file, sig = sig_int8)
+
+npzfile = np.load(out_file)
